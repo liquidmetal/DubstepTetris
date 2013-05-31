@@ -2,6 +2,8 @@ package in.liquidmetal.dubsteptetris;
 
 import android.opengl.GLES20;
 
+import java.nio.ByteBuffer;
+
 /**
  * Created by utkarsh on 26/5/13.
  */
@@ -41,5 +43,13 @@ public class Util {
         }
 
         return programHandle;
+    }
+
+    public static int createImageTexture(ByteBuffer data, int width, int height, int format) {
+        int[] textureHandles = new int[1];
+        int textureHandle;
+
+        GLES20.glGenTextures(GLES20.GL_TEXTURE_2D, textureHandles, 0);
+        
     }
 }

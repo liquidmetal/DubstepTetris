@@ -42,7 +42,6 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         AlignedRect.createProgram();
 
-        GLES20.glClearColor(0.0f, 0.25f, 0.0f, 1.0f);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
     }
@@ -81,23 +80,25 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     public void onDrawFrame(GL10 gl10) {
         mGameState.calculateNextFrame();
 
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-
+        mGameState.clearScreen();
 
         mGameState.drawBoard();
+        mGameState.drawNextPiece();
         mGameState.updateRenderTime();
     }
 
     public void touchEvent(MotionEvent e) {
-        mDetector.onTouchEvent(e);
+        boolean used = mDetector.onTouchEvent(e);
+        if(used)
+            return;
 
         switch(e.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                mGameState.signalTranslate((int)e.getX());
+                mGameState.signalMotion((int)e.getX(), (int)e.getY());
                 break;
 
             case MotionEvent.ACTION_DOWN:
-                mGameState.signalDown(e.getX(), e.getY());
+                mGameState.signalDown((int)e.getX(), (int)e.getY());
                 break;
         }
 
@@ -121,7 +122,8 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent) {
-        return false;
+        mGameState.handleRotation((int)motionEvent.getX());
+        return true;
     }
 
     @Override
