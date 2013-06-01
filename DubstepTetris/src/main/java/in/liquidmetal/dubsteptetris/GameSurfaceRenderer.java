@@ -119,6 +119,7 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         GLES20.glDisable(GLES20.GL_BLEND);
 
         mGameState.updateRenderTime();
+        mSurfaceView.requestRender();
     }
 
     public void touchEvent(MotionEvent e) {
@@ -145,7 +146,7 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
             // Create a new piece of text
             GLText animatedText = new GLText(255, 63, "+" + change, 72, 0, 0);
-            animatedText.setPosition(700, 200);
+            animatedText.setPosition(650, 200);
             tempTextureObjects.add((TexturedAlignedRect)animatedText);
 
             PositionAnimator pa = new PositionAnimator(2500, 0, 200);

@@ -4,6 +4,7 @@ import in.liquidmetal.dubsteptetris.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +30,7 @@ public class MainActivity extends Activity {
         // that we ever draw.
         mGLView = new GameSurfaceView(this, mGameState);
         setContentView(mGLView);
+        mGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
     @Override
