@@ -45,6 +45,8 @@ public class GameState {
     private int score = 0;
     private int level = 1;
 
+
+
     private int[][] board_representation = new int[numCellsY+2][numCellsX];
     private AlignedRect[][] board = new AlignedRect[numCellsY][numCellsX];
     static float[][] tetraminoColors = new float[TETRAMINO_TOTAL][3];
@@ -103,6 +105,9 @@ public class GameState {
 
     private GameSurfaceRenderer myRenderer;
 
+    // Used for the true tetris random generator
+    private boolean[] currentBag = new boolean[TETRAMINO_TOTAL];
+
     public void setRenderer(GameSurfaceRenderer renderer) {
         myRenderer = renderer;
     }
@@ -149,6 +154,11 @@ public class GameState {
         backgroundColor = colorNeutral.clone();
 
         animBgDanger = new ColorAnimator(2000, colorNeutral, colorDanger);
+
+        // Nothing has appeared... yet
+        for(int i=0;i<TETRAMINO_TOTAL;i++)
+            currentBag[i] = false;
+
         createNewTetramino();
     }
 
@@ -280,7 +290,30 @@ public class GameState {
 
     public void createNewTetramino() {
         currentTetramino = nextTetramino;
-        nextTetramino = (int)Math.floor(Math.random()*7);
+        currentBag[currentTetramino] = true;
+
+        // Do we need to switch to a new bag?
+        boolean newBag = true;
+        for(int i=0;i<TETRAMINO_TOTAL;i++) {
+            if(!currentBag[i]) {
+                newBag = false;
+                break;
+            }
+        }
+
+        if(newBag) {
+            for(int i=0;i<TETRAMINO_TOTAL;i++) {
+                currentBag[i] = false;
+            }
+            nextTetramino = (int)Math.floor(Math.random()*7);
+        } else {
+            // Find a tetramino we can generate
+            nextTetramino = (int)Math.floor(Math.random()*7);
+
+            while(currentBag[nextTetramino]) {
+                nextTetramino = (int)Math.floor(Math.random()*7);
+            }
+        }
 
         updateNextTetraminoDisplay();
         spawnTetramino();
