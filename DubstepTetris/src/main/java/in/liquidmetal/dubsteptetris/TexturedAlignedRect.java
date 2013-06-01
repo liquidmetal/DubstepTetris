@@ -27,6 +27,7 @@ public class TexturedAlignedRect extends BaseRect {
             "uniform sampler2D u_texture;" +
             "varying vec2 v_texCoord;" +
             "void main() {" +
+            //"    gl_FragColor = vec4(v_texCoord, 0.0, 1.0);"+  // debug: display UVs
             "    gl_FragColor = texture2D(u_texture, v_texCoord);" +
             "}";
 
@@ -36,6 +37,7 @@ public class TexturedAlignedRect extends BaseRect {
     private static int sTexCoordHandle = -1;
     private static int sPositionHandle = -1;
     private static int sMVPMatrixHandle = -1;
+    private static int sTextureUniformHandle = -1;
 
     private int mTextureDataHandle = -1;
     private int mTextureWidth = -1;
@@ -50,6 +52,7 @@ public class TexturedAlignedRect extends BaseRect {
         FloatBuffer fb = ByteBuffer.allocateDirect(VERTEX_COUNT * TEX_VERTEX_STRIDE).order(ByteOrder.nativeOrder()).asFloatBuffer();
         fb.put(defaultCoords);
         defaultCoords.position(0);
+        fb.position(0);
         mTexBuffer = fb;
     }
 
@@ -59,11 +62,7 @@ public class TexturedAlignedRect extends BaseRect {
         sPositionHandle = GLES20.glGetAttribLocation(sProgramHandle, "a_position");
         sTexCoordHandle = GLES20.glGetAttribLocation(sProgramHandle, "a_texCoord");
         sMVPMatrixHandle = GLES20.glGetUniformLocation(sProgramHandle, "u_mvpMatrix");
-        int textureUniformHandle = GLES20.glGetUniformLocation(sProgramHandle, "u_texture");
-
-        GLES20.glUseProgram(sProgramHandle);
-        GLES20.glUniform1i(textureUniformHandle, 0);
-        GLES20.glUseProgram(0);
+        sTextureUniformHandle = GLES20.glGetUniformLocation(sProgramHandle, "u_texture");
     }
 
     public void setTexture(ByteBuffer buf, int width, int height, int format) {
@@ -102,12 +101,13 @@ public class TexturedAlignedRect extends BaseRect {
 
     public void draw() {
         GLES20.glUseProgram(sProgramHandle);
+        GLES20.glUniform1i(sTextureUniformHandle, mTextureDataHandle);
 
         GLES20.glEnableVertexAttribArray(sPositionHandle);
         GLES20.glVertexAttribPointer(sPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, VERTEX_STRIDE, sVertexBuffer);
 
         GLES20.glEnableVertexAttribArray(sTexCoordHandle);
-        GLES20.glVertexAttribPointer(sTexCoordHandle, TEX_COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX, mTexBuffer);
+        GLES20.glVertexAttribPointer(sTexCoordHandle, TEX_COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, TEX_VERTEX_STRIDE, mTexBuffer);
 
         float[] mvp = sTempMVP;
         Matrix.multiplyMM(mvp, 0, GameSurfaceRenderer.mProjectionMatrix, 0, mModelView, 0);

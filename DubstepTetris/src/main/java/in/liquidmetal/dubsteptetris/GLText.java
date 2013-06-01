@@ -59,10 +59,9 @@ public class GLText extends TexturedAlignedRect {
 
     public Bitmap createTextureBitmap() {
         Bitmap bitmap = Bitmap.createBitmap(TEXTURE_WIDTH, TEXTURE_HEIGHT, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-
-        //bitmap.eraseColor(0x00000000);
         bitmap.eraseColor(0x00000000);
+
+        Canvas canvas = new Canvas(bitmap);
 
         Paint textPaint = new Paint();
         Typeface typeFace = Typeface.defaultFromStyle(Typeface.BOLD);
@@ -73,23 +72,25 @@ public class GLText extends TexturedAlignedRect {
         int startx = 0;
         int starty = 0;
         int lineHeight = 0;
-        textPaint.setColor(0xffff0000);
-        textPaint.setShadowLayer(shadowRadius, shadowOffset, shadowOffset, 0xffff0000);
-        canvas.drawText(text, 50, 500, textPaint);
+        textPaint.setColor(0xffffffff);
+        textPaint.setShadowLayer(shadowRadius, shadowOffset, shadowOffset, 0xff000000);
+
+
 
         Rect boundsRect = new Rect();
         textPaint.getTextBounds(text, 0, text.length(), boundsRect);
+        canvas.drawText(text, 0-boundsRect.left, 0-boundsRect.top, textPaint);
         boundsRect.bottom += shadowRadius + shadowOffset;
         boundsRect.right += shadowRadius + shadowOffset;
 
-        if(boundsRect.width() > TEXTURE_WIDTH || boundsRect.height() > TEXTURE_HEIGHT) {
+        /*if(boundsRect.width() > TEXTURE_WIDTH || boundsRect.height() > TEXTURE_HEIGHT) {
             Log.w("info",  "HEY: The text " + text + " is too long for the rectangle " + boundsRect);
-        }
+        }*/
 
 
-        boundsRect.offsetTo(startx, starty);
-        lineHeight = Math.max(lineHeight, boundsRect.height() + 1);
-        startx += boundsRect.width() + 1;
+        //boundsRect.offsetTo(startx, starty);
+        //lineHeight = Math.max(lineHeight, boundsRect.height() + 1);
+        //startx += boundsRect.width() + 1;
 
         return bitmap;
     }

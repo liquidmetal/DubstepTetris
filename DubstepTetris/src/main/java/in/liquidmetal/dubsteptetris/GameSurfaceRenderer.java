@@ -48,8 +48,8 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         AlignedRect.createProgram();
         GLText.createProgram();
 
-        text = new GLText("ABCD", 24, 0, 0);
-        text.setPosition(600, 300);
+        text = new GLText("ABCD", 300, 0, 0);
+        text.setPosition(300, 300);
         text.setScale(512, 512);
 
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -95,8 +95,10 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         //mGameState.drawBoard();
         //mGameState.drawNextPiece();
         //mGameState.updateRenderTime();
-
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         text.draw();
+        GLES20.glDisable(GLES20.GL_BLEND);
     }
 
     public void touchEvent(MotionEvent e) {
