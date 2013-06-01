@@ -13,6 +13,7 @@ import javax.microedition.khronos.opengles.GL10;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.LinkedList;
 
 /**
  * Created by utkarsh on 26/5/13.
@@ -33,16 +34,16 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
     private boolean bSurfaceCreated = false;
 
-    private GLText text;
+    private GLText textScore, textStatic;
+
+    private LinkedList<TexturedAlignedRect> tempTextureObjects = new LinkedList<TexturedAlignedRect>();
+    private LinkedList<Animator> animatorObjects = new LinkedList<Animator>();
 
     public GameSurfaceRenderer(GameState gameState, GameSurfaceView gameSurfaceView) {
         mGameState = gameState;
         mSurfaceView = gameSurfaceView;
 
         mDetector = new GestureDetectorCompat(gameSurfaceView.getContext(), this);
-
-
-
     }
 
     @Override
@@ -50,8 +51,11 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         AlignedRect.createProgram();
         GLText.createProgram();
 
-        text = new GLText(300, 300, "ABCD", 100, 0, 0);
-        text.setPosition(700, 1000);
+        textScore = new GLText(300, 300, "ABCD", 100, 0, 0);
+        textScore.setPosition(700, 1000);
+
+        textStatic = new GLText(300, 300, "static", 100, 0, 0);
+        textStatic.setPosition(700, 700);
 
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
@@ -88,9 +92,16 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         Matrix.orthoM(mProjectionMatrix, 0, 0, GameState.ARENA_WIDTH, 0, GameState.ARENA_HEIGHT, -1.0f, 1.0f);
     }
 
+    private void updateAnimators() {
+        for(Animator a:animatorObjects) {
+            a.update();
+        }
+    }
+
     @Override
     public void onDrawFrame(GL10 gl10) {
         mGameState.calculateNextFrame();
+        updateAnimators();
 
         mGameState.clearScreen();
 
@@ -100,7 +111,11 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         // Draw things that require blending
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-        text.draw();
+        textScore.draw();
+        textStatic.draw();
+        for(TexturedAlignedRect r:tempTextureObjects) {
+            r.draw();
+        }
         GLES20.glDisable(GLES20.GL_BLEND);
 
         mGameState.updateRenderTime();
@@ -123,9 +138,20 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
     }
 
-    public void OnScoreChange(int newScore) {
+    public void OnScoreChange(int change) {
         if(bSurfaceCreated) {
-            text.setText("" + newScore);
+            // Update the text displayed on the scoreboard
+            textScore.setText("" + mGameState.getScore());
+
+            // Create a new piece of text
+            GLText animatedText = new GLText(255, 63, "+" + change, 72, 0, 0);
+            animatedText.setPosition(700, 200);
+            tempTextureObjects.add((TexturedAlignedRect)animatedText);
+
+            PositionAnimator pa = new PositionAnimator(2500, 0, 200);
+            pa.setObjectToAnimate((TexturedAlignedRect)animatedText);
+            animatorObjects.add(pa);
+            pa.start();
         }
     }
 

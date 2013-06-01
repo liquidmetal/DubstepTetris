@@ -46,8 +46,8 @@ public class GLText extends TexturedAlignedRect {
     }
 
     public Bitmap createTextureBitmap() {
-        Bitmap bitmap = Bitmap.createBitmap(iTextureWidth, iTextureWidth, Bitmap.Config.ARGB_8888);
-        bitmap.eraseColor(0xff000000);
+        Bitmap bitmap = Bitmap.createBitmap(iTextureWidth, iTextureHeight, Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(0x00000000);
 
         Canvas canvas = new Canvas(bitmap);
 

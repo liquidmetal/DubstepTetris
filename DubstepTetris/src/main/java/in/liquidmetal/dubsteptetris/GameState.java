@@ -152,9 +152,13 @@ public class GameState {
         createNewTetramino();
     }
 
-    private void setScore(int newScore) {
-        score = newScore;
-        myRenderer.OnScoreChange(newScore);
+    public long getScore() {
+        return score;
+    }
+
+    private void increaseScore(int change) {
+        score = score + change;
+        myRenderer.OnScoreChange(change);
     }
 
     public void clearScreen() {
@@ -403,7 +407,7 @@ public class GameState {
             }
         }
 
-        setScore(score + scoreTypes[totalLines]*level);
+        increaseScore(scoreTypes[totalLines]*level);
     }
 
     public void syncRepresentationAndBoard() {

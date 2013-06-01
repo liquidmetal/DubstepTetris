@@ -101,7 +101,7 @@ public class TexturedAlignedRect extends BaseRect {
 
     public void draw() {
         GLES20.glUseProgram(sProgramHandle);
-        GLES20.glUniform1i(sTextureUniformHandle, mTextureDataHandle);
+        GLES20.glUniform1i(sTextureUniformHandle, 0);
 
         GLES20.glEnableVertexAttribArray(sPositionHandle);
         GLES20.glVertexAttribPointer(sPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, VERTEX_STRIDE, sVertexBuffer);
@@ -119,6 +119,7 @@ public class TexturedAlignedRect extends BaseRect {
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, VERTEX_COUNT);
         GLES20.glDisableVertexAttribArray(sPositionHandle);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         GLES20.glUseProgram(0);
     }
 }
