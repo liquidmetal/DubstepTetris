@@ -26,9 +26,11 @@ public class TexturedAlignedRect extends BaseRect {
             "precision mediump float;" +
             "uniform sampler2D u_texture;" +
             "varying vec2 v_texCoord;" +
+            "uniform float alpha_multiplier;" +
             "void main() {" +
             //"    gl_FragColor = vec4(v_texCoord, 0.0, 1.0);"+  // debug: display UVs
-            "    gl_FragColor = texture2D(u_texture, v_texCoord);" +
+            "    vec4 sampleColor = texture2D(u_texture, v_texCoord);" +
+            "    gl_FragColor = vec4(sampleColor.a*alpha_multiplier, sampleColor.a*alpha_multiplier, sampleColor.a*alpha_multiplier, sampleColor.a*alpha_multiplier);" +
             "}";
 
     private static FloatBuffer sVertexBuffer = getVertexArray();
@@ -36,6 +38,7 @@ public class TexturedAlignedRect extends BaseRect {
     private static int sProgramHandle = -1;
     private static int sTexCoordHandle = -1;
     private static int sPositionHandle = -1;
+    private static int sAlphaMultiplierHandle = -1;
     private static int sMVPMatrixHandle = -1;
     private static int sTextureUniformHandle = -1;
 
@@ -43,6 +46,7 @@ public class TexturedAlignedRect extends BaseRect {
     private int mTextureWidth = -1;
     private int mTextureHeight = -1;
     private FloatBuffer mTexBuffer;
+    private float alphaMultiplier = 1.0f;
 
     private static float[] sTempMVP = new float[16];
 
@@ -61,6 +65,8 @@ public class TexturedAlignedRect extends BaseRect {
 
         sPositionHandle = GLES20.glGetAttribLocation(sProgramHandle, "a_position");
         sTexCoordHandle = GLES20.glGetAttribLocation(sProgramHandle, "a_texCoord");
+
+        sAlphaMultiplierHandle = GLES20.glGetUniformLocation(sProgramHandle, "alpha_multiplier");
         sMVPMatrixHandle = GLES20.glGetUniformLocation(sProgramHandle, "u_mvpMatrix");
         sTextureUniformHandle = GLES20.glGetUniformLocation(sProgramHandle, "u_texture");
     }
@@ -75,6 +81,14 @@ public class TexturedAlignedRect extends BaseRect {
         mTextureDataHandle = handle;
         mTextureWidth = width;
         mTextureHeight = height;
+    }
+
+    public void setAlphaMultiplier(float multiplier) {
+        alphaMultiplier = multiplier;
+    }
+
+    public float getAlphaMultiplier() {
+        return alphaMultiplier;
     }
 
     public void setTexCoords(Rect coords) {
@@ -109,16 +123,22 @@ public class TexturedAlignedRect extends BaseRect {
         GLES20.glEnableVertexAttribArray(sTexCoordHandle);
         GLES20.glVertexAttribPointer(sTexCoordHandle, TEX_COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, TEX_VERTEX_STRIDE, mTexBuffer);
 
+
         float[] mvp = sTempMVP;
         Matrix.multiplyMM(mvp, 0, GameSurfaceRenderer.mProjectionMatrix, 0, mModelView, 0);
-
         GLES20.glUniformMatrix4fv(sMVPMatrixHandle, 1, false, mvp, 0);
+
+        // Pass the alpha multiplier to the fragment shader
+        GLES20.glUniform1f(sAlphaMultiplierHandle, alphaMultiplier);
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, VERTEX_COUNT);
+
+        // Reset everything
         GLES20.glDisableVertexAttribArray(sPositionHandle);
+        GLES20.glDisableVertexAttribArray(sTexCoordHandle);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         GLES20.glUseProgram(0);
     }

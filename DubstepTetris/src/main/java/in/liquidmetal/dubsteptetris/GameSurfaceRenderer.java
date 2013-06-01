@@ -56,6 +56,7 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
         textStatic = new GLText(300, 300, "static", 100, 0, 0);
         textStatic.setPosition(700, 700);
+        textStatic.setAlphaMultiplier(0.5f);
 
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
@@ -140,20 +141,34 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     }
 
     public void OnScoreChange(int change) {
-        if(bSurfaceCreated) {
+        if(bSurfaceCreated && change > 0) {
             // Update the text displayed on the scoreboard
             textScore.setText("" + mGameState.getScore());
 
             // Create a new piece of text
             GLText animatedText = new GLText(255, 63, "+" + change, 72, 0, 0);
             animatedText.setPosition(650, 200);
-            tempTextureObjects.add((TexturedAlignedRect)animatedText);
+            tempTextureObjects.add(animatedText);
 
-            PositionAnimator pa = new PositionAnimator(2500, 0, 200);
+            PositionAnimator pa = new PositionAnimator(1000, 0, 200);
             pa.setObjectToAnimate((TexturedAlignedRect)animatedText);
-            animatorObjects.add(pa);
             pa.start();
+
+            DestroyAnimator da = new DestroyAnimator(1000, this);
+            da.addObject(animatedText);
+            da.start();
+
+            AlphaAnimator aa = new AlphaAnimator(1000, animatedText, 0.0f);
+            aa.start();
+
+            animatorObjects.add(pa);
+            animatorObjects.add(da);
+            animatorObjects.add(aa);
         }
+    }
+
+    public void deleteTempObject(BaseRect r) {
+        tempTextureObjects.remove((Object)r);
     }
 
     public void onViewPause(ConditionVariable syncObj) {
