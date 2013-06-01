@@ -24,6 +24,7 @@ public class GameSurfaceView extends GLSurfaceView {
         mGameState.initializeBoard();
 
         mRenderer = new GameSurfaceRenderer(mGameState, this);
+        mGameState.setRenderer(mRenderer);
         setRenderer(mRenderer);
     }
 

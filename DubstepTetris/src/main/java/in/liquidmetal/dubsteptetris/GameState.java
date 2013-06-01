@@ -101,6 +101,12 @@ public class GameState {
 
     private ColorAnimator animBgDanger;
 
+    private GameSurfaceRenderer myRenderer;
+
+    public void setRenderer(GameSurfaceRenderer renderer) {
+        myRenderer = renderer;
+    }
+
     public void initializeBoard() {
         initializeColors();
         float cellSize = BOARD_HEIGHT / numCellsY;
@@ -144,6 +150,11 @@ public class GameState {
 
         animBgDanger = new ColorAnimator(2000, colorNeutral, colorDanger);
         createNewTetramino();
+    }
+
+    private void setScore(int newScore) {
+        score = newScore;
+        myRenderer.OnScoreChange(newScore);
     }
 
     public void clearScreen() {
@@ -392,7 +403,7 @@ public class GameState {
             }
         }
 
-        score += scoreTypes[totalLines]*(level+1);
+        setScore(score + scoreTypes[totalLines]*level);
     }
 
     public void syncRepresentationAndBoard() {

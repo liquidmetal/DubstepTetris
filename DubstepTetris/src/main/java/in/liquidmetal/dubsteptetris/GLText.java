@@ -19,28 +19,16 @@ public class GLText extends TexturedAlignedRect {
     private int fontSize, shadowRadius, shadowOffset;
     private int textureID = -1;
 
-    private final static int TEXTURE_WIDTH = 512;
-    private final static int TEXTURE_HEIGHT = 512;
+    private int iTextureWidth;
+    private int iTextureHeight;
 
-    private static final String VERTEX_SHADER_CODE =
-            "uniform mat4 u_mvpMatrix;" +
-            "attribute vec4 a_position;" +
-            "attribute vec2 a_texcoord;" +
-            "varying vec2 a_texCoord;" +
-            "void main() {" +
-            "    gl_Position = u_mvpMatrix * a_position;" +
-            "    v_texCoord = a_texCoord;" +
-            "}";
+    public GLText(int sizeX, int sizeY, String text, int fontSize, int shadowRadius, int shadowOffset) {
+        //iTextureWidth = sizeX;
+        //iTextureHeight = sizeY;
+        iTextureWidth = (int)Math.pow(2, Math.ceil(Math.log(sizeX)/Math.log(2)));
+        iTextureHeight = (int)Math.pow(2, Math.ceil(Math.log(sizeY)/Math.log(2)));
 
-    private static final String FRAGMENT_SHADER_CODE =
-            "precision mediump float;" +
-            "uniform sampler2D u_texture;" +
-            "varying vec2 v_texCoord;" +
-            "void main() {" +
-            "    glFragColor = texture2D(u_texture, v_texCoord);" +
-            "}";
-
-    public GLText(String text, int fontSize, int shadowRadius, int shadowOffset) {
+        setScale(sizeX, sizeY);
         setText(text, fontSize, shadowRadius, shadowOffset);
     }
 
@@ -58,8 +46,8 @@ public class GLText extends TexturedAlignedRect {
     }
 
     public Bitmap createTextureBitmap() {
-        Bitmap bitmap = Bitmap.createBitmap(TEXTURE_WIDTH, TEXTURE_HEIGHT, Bitmap.Config.ARGB_8888);
-        bitmap.eraseColor(0x00000000);
+        Bitmap bitmap = Bitmap.createBitmap(iTextureWidth, iTextureWidth, Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(0xff000000);
 
         Canvas canvas = new Canvas(bitmap);
 
@@ -107,7 +95,7 @@ public class GLText extends TexturedAlignedRect {
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
 
-        setTexture(handles[0], TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        setTexture(handles[0], iTextureWidth, iTextureHeight);
 
         bitmap.recycle();
     }

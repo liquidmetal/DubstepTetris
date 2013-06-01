@@ -31,6 +31,8 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     private AlignedRect rect;
     private float oldX;
 
+    private boolean bSurfaceCreated = false;
+
     private GLText text;
 
     public GameSurfaceRenderer(GameState gameState, GameSurfaceView gameSurfaceView) {
@@ -48,12 +50,12 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         AlignedRect.createProgram();
         GLText.createProgram();
 
-        text = new GLText("ABCD", 300, 0, 0);
-        text.setPosition(300, 300);
-        text.setScale(512, 512);
+        text = new GLText(300, 300, "ABCD", 100, 0, 0);
+        text.setPosition(700, 1000);
 
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
+        bSurfaceCreated = true;
     }
 
     @Override
@@ -88,17 +90,20 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
     @Override
     public void onDrawFrame(GL10 gl10) {
-        //mGameState.calculateNextFrame();
+        mGameState.calculateNextFrame();
 
         mGameState.clearScreen();
 
-        //mGameState.drawBoard();
-        //mGameState.drawNextPiece();
-        //mGameState.updateRenderTime();
+        mGameState.drawBoard();
+        mGameState.drawNextPiece();
+
+        // Draw things that require blending
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         text.draw();
         GLES20.glDisable(GLES20.GL_BLEND);
+
+        mGameState.updateRenderTime();
     }
 
     public void touchEvent(MotionEvent e) {
@@ -116,6 +121,12 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
                 break;
         }
 
+    }
+
+    public void OnScoreChange(int newScore) {
+        if(bSurfaceCreated) {
+            text.setText("" + newScore);
+        }
     }
 
     public void onViewPause(ConditionVariable syncObj) {
