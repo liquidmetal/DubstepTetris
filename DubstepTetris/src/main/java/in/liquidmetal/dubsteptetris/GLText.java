@@ -14,7 +14,7 @@ import android.util.Log;
  * A class to encapsulate all functionality needed for rendering text
  * onto an OpenGL surface
  */
-public class GLText {
+public class GLText extends TexturedAlignedRect {
     private String text;
     private int fontSize, shadowRadius, shadowOffset;
     private int textureID = -1;
@@ -38,7 +38,11 @@ public class GLText {
             "varying vec2 v_texCoord;" +
             "void main() {" +
             "    glFragColor = texture2D(u_texture, v_texCoord);" +
-            "}"
+            "}";
+
+    public GLText(String text, int fontSize, int shadowRadius, int shadowOffset) {
+        setText(text, fontSize, shadowRadius, shadowOffset);
+    }
 
     public void setText(String text, int fontSize, int shadowRadius, int shadowOffset) {
         this.fontSize = fontSize;
@@ -54,9 +58,10 @@ public class GLText {
     }
 
     public Bitmap createTextureBitmap() {
-        Bitmap bitmap = Bitmap.createBitmap(TEXTURE_WIDTH, TEXTURE_HEIGHT, Bitmap.Config.ARGB_4444);
+        Bitmap bitmap = Bitmap.createBitmap(TEXTURE_WIDTH, TEXTURE_HEIGHT, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
 
+        //bitmap.eraseColor(0x00000000);
         bitmap.eraseColor(0x00000000);
 
         Paint textPaint = new Paint();
@@ -68,8 +73,9 @@ public class GLText {
         int startx = 0;
         int starty = 0;
         int lineHeight = 0;
-        textPaint.setColor(0xffffffff);
-        textPaint.setShadowLayer(shadowRadius, shadowOffset, shadowOffset, 0xffffffff);
+        textPaint.setColor(0xffff0000);
+        textPaint.setShadowLayer(shadowRadius, shadowOffset, shadowOffset, 0xffff0000);
+        canvas.drawText(text, 50, 500, textPaint);
 
         Rect boundsRect = new Rect();
         textPaint.getTextBounds(text, 0, text.length(), boundsRect);
@@ -77,10 +83,10 @@ public class GLText {
         boundsRect.right += shadowRadius + shadowOffset;
 
         if(boundsRect.width() > TEXTURE_WIDTH || boundsRect.height() > TEXTURE_HEIGHT) {
-            Log.w("HEY: The text " + text + " is too long for the rectangle " + boundsRect);
+            Log.w("info",  "HEY: The text " + text + " is too long for the rectangle " + boundsRect);
         }
 
-        canvas.drawText(text, startx - boundsRect.left, starty - boundsRect.top, textPaint);
+
         boundsRect.offsetTo(startx, starty);
         lineHeight = Math.max(lineHeight, boundsRect.height() + 1);
         startx += boundsRect.width() + 1;
@@ -94,21 +100,18 @@ public class GLText {
 
         int[] handles = new int[1];
         GLES20.glGenTextures(1, handles, 0);
-        textureID = handles[0];
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureID);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, handles[0]);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+
+        setTexture(handles[0], TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
         bitmap.recycle();
     }
 
     public void generateTexture() {
-
-    }
-
-    public void draw() {
 
     }
 }

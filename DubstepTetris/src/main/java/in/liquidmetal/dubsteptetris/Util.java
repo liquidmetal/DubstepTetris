@@ -50,6 +50,13 @@ public class Util {
         int textureHandle;
 
         GLES20.glGenTextures(GLES20.GL_TEXTURE_2D, textureHandles, 0);
-        
+        textureHandle = textureHandles[0];
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, format, width, height, 0, format, GLES20.GL_UNSIGNED_BYTE, data);
+
+        return textureHandle;
     }
 }
