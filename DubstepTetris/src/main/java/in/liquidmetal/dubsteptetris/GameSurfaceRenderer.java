@@ -58,7 +58,6 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         textStatic.setPosition(700, 700);
         textStatic.setAlphaMultiplier(0.5f);
 
-        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
         bSurfaceCreated = true;
     }
@@ -120,6 +119,8 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         GLES20.glDisable(GLES20.GL_BLEND);
 
         mGameState.updateRenderTime();
+
+        // After everything's done, swap buffers
         mSurfaceView.requestRender();
     }
 

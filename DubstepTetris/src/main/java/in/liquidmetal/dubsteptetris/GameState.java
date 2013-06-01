@@ -301,15 +301,17 @@ public class GameState {
             }
         }
 
+        // Generate an initial guess
+        nextTetramino = (int)Math.floor(Math.random()*7);
         if(newBag) {
+            // Mark everything as 'uncreated'
             for(int i=0;i<TETRAMINO_TOTAL;i++) {
                 currentBag[i] = false;
             }
-            nextTetramino = (int)Math.floor(Math.random()*7);
-        } else {
-            // Find a tetramino we can generate
-            nextTetramino = (int)Math.floor(Math.random()*7);
 
+        } else {
+            // Keep iterating until we find something that works
+            // with the current bag we have
             while(currentBag[nextTetramino]) {
                 nextTetramino = (int)Math.floor(Math.random()*7);
             }

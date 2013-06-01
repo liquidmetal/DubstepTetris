@@ -30,7 +30,8 @@ public class TexturedAlignedRect extends BaseRect {
             "void main() {" +
             //"    gl_FragColor = vec4(v_texCoord, 0.0, 1.0);"+  // debug: display UVs
             "    vec4 sampleColor = texture2D(u_texture, v_texCoord);" +
-            "    gl_FragColor = vec4(sampleColor.a*alpha_multiplier, sampleColor.a*alpha_multiplier, sampleColor.a*alpha_multiplier, sampleColor.a*alpha_multiplier);" +
+            "    sampleColor.a = sampleColor.a*alpha_multiplier;" +
+            "    gl_FragColor = vec4(sampleColor.r*sampleColor.a, sampleColor.g*sampleColor.a, sampleColor.b*sampleColor.a, sampleColor.a);" +
             "}";
 
     private static FloatBuffer sVertexBuffer = getVertexArray();
@@ -62,6 +63,8 @@ public class TexturedAlignedRect extends BaseRect {
 
     public static void createProgram() {
         sProgramHandle = Util.createProgram(VERTEX_SHADER_CODE, FRAGMENT_SHADER_CODE);
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
         sPositionHandle = GLES20.glGetAttribLocation(sProgramHandle, "a_position");
         sTexCoordHandle = GLES20.glGetAttribLocation(sProgramHandle, "a_texCoord");
