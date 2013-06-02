@@ -62,6 +62,7 @@ public class GameState {
     private int touchDownX, touchDownY;
     private int tetrDownX, tetrDownY;
     private int rotationStage = 0;      // Stages can be 0, 1, 2, 3
+    private long lastRotateTimestamp = 0;
 
     // Each stage is specified -----> (not vvvv)
     private int[][][] stagesI = {{{0, 0, 0, 0}, {1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}},
@@ -575,7 +576,7 @@ public class GameState {
                             if(board_representation[y-i][x+j-trueLeft] == TETRAMINO_TOTAL+currentTetramino)
                                 continue;
 
-                            board[y-i][x+j-trueLeft].setColor(0.298f, 0.333f, 0.396f);
+                            board[y-i][x+j-trueLeft].setColor(0.198f, 0.200f, 0.200f);
                         }
                     }
                 }
@@ -743,7 +744,63 @@ public class GameState {
         }
     }
 
+    private int[] getTrueBounds(int[][] currentStage) {
+        int trueBottom = 0, trueLeft = 0, trueRight = 0;
+
+        for(int i=currentStage.length-1;i>=0;i--) {
+            boolean isRowEmpty = true;
+            for(int j=0;j<currentStage.length;j++) {
+                if(currentStage[i][j]==1) {
+                    isRowEmpty = false;
+                    trueBottom = i;
+                    break;
+                }
+            }
+
+            if(isRowEmpty==false)
+                break;
+        }
+
+        for(int j=0;j<currentStage.length;j++) {
+            boolean isRowEmpty = true;
+            for(int i=0;i<currentStage.length;i++) {
+                if(currentStage[i][j]==1) {
+                    isRowEmpty = false;
+                    trueLeft = j;
+                    break;
+                }
+            }
+
+            if(!isRowEmpty)
+                break;
+        }
+
+        for(int j=currentStage.length-1;j>=0;j--) {
+            boolean isRowEmpty = true;
+            for(int i=0;i<currentStage.length;i++) {
+                if(currentStage[i][j]==1) {
+                    isRowEmpty = false;
+                    trueRight = j;
+                    break;
+                }
+            }
+
+            if(!isRowEmpty)
+                break;
+        }
+        int[] ret = {trueBottom, trueLeft, trueRight};
+        return ret;
+    }
+
     public void handleRotation(int positionX) {
+        // Less than 10ms before the last rotate? Slow down!
+        long newTimeStamp = (new Date()).getTime();
+        if(newTimeStamp - lastRotateTimestamp<=10) {
+            return;
+        }
+
+        lastRotateTimestamp = newTimeStamp;
+
         int[][][][] stages = {stagesI, stagesL, stagesJ, stagesO, stagesT, stagesS, stagesZ};
         int[][] oldStage = stages[currentTetramino][rotationStage];
         int oldRotationStage = rotationStage;
@@ -761,6 +818,21 @@ public class GameState {
 
         int[][] newStage = stages[currentTetramino][rotationStage];
 
+        int trueOldBottom = 0, trueOldLeft = 0, trueOldRight = 0;
+        int trueNewBottom = 0, trueNewLeft = 0, trueNewRight = 0;
+
+        int[] ret = getTrueBounds(oldStage);
+        trueOldBottom = ret[0];
+        trueOldLeft = ret[1];
+        trueOldRight = ret[2];
+
+        ret = getTrueBounds(newStage);
+        trueNewBottom = ret[0];
+        trueNewLeft = ret[1];
+        trueNewRight = ret[2];
+
+
+
         // Step 1: Do a sort of template match on the grid to identify the
         // location of the pattern
 
@@ -769,12 +841,14 @@ public class GameState {
         int foundx, foundy;
         outerBreak:for(int y=0;y<numCellsY-oldStage.length+3;y++) {
             outerContinue:for(int x=0;x<numCellsX-oldStage[0].length+1;x++) {
+
+                // First, identify the x,y cooredinates of the old stage
                 for(int i=0;i<oldStage.length;i++) {
-                    for(int j=0;j<oldStage[0].length;j++) {
-                        if(oldStage[oldStage.length-i-1][j] == 1 && board_representation[y+i][x+j]!=TETRAMINO_TOTAL+currentTetramino)
+                    for(int j=trueOldLeft;j<=trueOldRight;j++) {
+                        if(oldStage[oldStage.length-i-1][j-trueOldLeft] == 1 && board_representation[y+i][x+j-trueOldLeft]!=TETRAMINO_TOTAL+currentTetramino)
                             continue outerContinue;
 
-                        if(oldStage[oldStage.length-i-1][j] == 0 && board_representation[y+i][x+j]==TETRAMINO_TOTAL+currentTetramino)
+                        if(oldStage[oldStage.length-i-1][j-trueOldLeft] == 0 && board_representation[y+i][x+j-trueOldLeft]==TETRAMINO_TOTAL+currentTetramino)
                             continue outerContinue;
 
 
