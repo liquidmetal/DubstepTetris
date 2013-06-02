@@ -144,6 +144,10 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
             case MotionEvent.ACTION_DOWN:
                 mGameState.signalDown((int)e.getX(), (int)e.getY());
                 break;
+
+            case MotionEvent.ACTION_UP:
+                mGameState.signalUp((int)e.getX(), (int)e.getY());
+                break;
         }
 
     }

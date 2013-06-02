@@ -105,6 +105,7 @@ public class GameState {
     private ColorAnimator animBgDanger;
 
     private GameSurfaceRenderer myRenderer;
+    private boolean haltForceDrop = false;
 
     // Used for the true tetris random generator
     private boolean[] currentBag = new boolean[TETRAMINO_TOTAL];
@@ -413,6 +414,7 @@ public class GameState {
 
             checkLines();
             createNewTetramino();
+            haltForceDrop = true;
         }
 
         syncRepresentationAndBoard();
@@ -738,10 +740,14 @@ public class GameState {
     }
 
     private void handleDown(int positionY) {
-        if(touchDownY>0 && touchDownY-positionY < 20) {
+        if(touchDownY>0 && touchDownY-positionY < 20 && !haltForceDrop) {
             dropTetramino();
             syncRepresentationAndBoard();
         }
+    }
+
+    public void signalUp(int x, int y) {
+        haltForceDrop = false;
     }
 
     private int[] getTrueBounds(int[][] currentStage) {
@@ -788,8 +794,8 @@ public class GameState {
             if(!isRowEmpty)
                 break;
         }
-        int[] ret = {trueBottom, trueLeft, trueRight};
-        return ret;
+
+        return new int[]{trueBottom, trueLeft, trueRight};
     }
 
     public void handleRotation(int positionX) {
