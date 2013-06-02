@@ -168,9 +168,9 @@ public class GameState {
         return score;
     }
 
-    private void increaseScore(int change) {
+    private void increaseScore(int change, int lowestLine, int totalLines) {
         score = score + change;
-        myRenderer.OnScoreChange(change);
+        myRenderer.OnScoreChange(change, lowestLine, totalLines);
     }
 
     public void clearScreen() {
@@ -424,6 +424,7 @@ public class GameState {
 
     private void checkLines() {
         int totalLines = 0;
+        int lowestLine = -1;
         for(int y=0;y<numCellsY;y++) {
             boolean isLineDone = true;
             for(int x=0;x<numCellsX;x++) {
@@ -434,6 +435,9 @@ public class GameState {
             }
 
             if(isLineDone) {
+                if(lowestLine==-1)
+                    lowestLine = y;
+
                 for(int y2=y;y2<numCellsY;y2++) {
                     for(int x=0;x<numCellsX;x++) {
                         board_representation[y2][x] = board_representation[y2+1][x];
@@ -445,7 +449,7 @@ public class GameState {
             }
         }
 
-        increaseScore(scoreTypes[totalLines]*level);
+        increaseScore(scoreTypes[totalLines]*level, lowestLine, totalLines);
     }
 
     public void syncRepresentationAndBoard() {

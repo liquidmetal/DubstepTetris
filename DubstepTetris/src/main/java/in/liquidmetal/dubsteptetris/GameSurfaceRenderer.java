@@ -152,14 +152,22 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
     }
 
-    public void OnScoreChange(int change) {
+    public void OnScoreChange(int change, int lowestLine, int totalLines) {
         if(bSurfaceCreated && change > 0) {
             // Update the text displayed on the scoreboard
             textScore.setText("" + mGameState.getScore());
 
             // Create a new piece of text
             GLText animatedText = new GLText(255, 63, "+" + change, 72, 0, 0);
-            animatedText.setPosition(650, 200);
+            animatedText.setPosition(650, 100+50*lowestLine);
+
+            switch(totalLines) {
+                case 1: animatedText.setColor(0x7F6200); break;
+                case 2: animatedText.setColor(0xCC9D00); break;
+                case 3: animatedText.setColor(0xFFC400); break;
+                case 4: animatedText.setColor(0xFFF800); break;
+            }
+
             tempTextureObjects.add(animatedText);
 
             PositionAnimator pa = new PositionAnimator(1000, 0, 200);

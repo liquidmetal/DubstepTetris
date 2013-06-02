@@ -18,6 +18,7 @@ public class GLText extends TexturedAlignedRect {
     private String text;
     private int fontSize, shadowRadius, shadowOffset;
     private int textureID = -1;
+    private int textColor;
 
     private int iTextureWidth;
     private int iTextureHeight;
@@ -27,6 +28,7 @@ public class GLText extends TexturedAlignedRect {
         //iTextureHeight = sizeY;
         iTextureWidth = (int)Math.pow(2, Math.ceil(Math.log(sizeX)/Math.log(2)));
         iTextureHeight = (int)Math.pow(2, Math.ceil(Math.log(sizeY)/Math.log(2)));
+        textColor = 0xffffff;
 
         setScale(sizeX, sizeY);
         setText(text, fontSize, shadowRadius, shadowOffset);
@@ -45,6 +47,11 @@ public class GLText extends TexturedAlignedRect {
         updateTexture();
     }
 
+    public void setColor(int color) {
+        textColor = color;
+        updateTexture();
+    }
+
     public Bitmap createTextureBitmap() {
         Bitmap bitmap = Bitmap.createBitmap(iTextureWidth, iTextureHeight, Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(0x00000000);
@@ -60,7 +67,7 @@ public class GLText extends TexturedAlignedRect {
         int startx = 0;
         int starty = 0;
         int lineHeight = 0;
-        textPaint.setColor(0xffffffff);
+        textPaint.setColor(0xff000000 | textColor);
         textPaint.setShadowLayer(shadowRadius, shadowOffset, shadowOffset, 0xff000000);
 
 
@@ -70,15 +77,6 @@ public class GLText extends TexturedAlignedRect {
         canvas.drawText(text, 0-boundsRect.left, 0-boundsRect.top, textPaint);
         boundsRect.bottom += shadowRadius + shadowOffset;
         boundsRect.right += shadowRadius + shadowOffset;
-
-        /*if(boundsRect.width() > TEXTURE_WIDTH || boundsRect.height() > TEXTURE_HEIGHT) {
-            Log.w("info",  "HEY: The text " + text + " is too long for the rectangle " + boundsRect);
-        }*/
-
-
-        //boundsRect.offsetTo(startx, starty);
-        //lineHeight = Math.max(lineHeight, boundsRect.height() + 1);
-        //startx += boundsRect.width() + 1;
 
         return bitmap;
     }
