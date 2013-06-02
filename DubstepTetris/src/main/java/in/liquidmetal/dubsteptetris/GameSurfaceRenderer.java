@@ -13,6 +13,7 @@ import javax.microedition.khronos.opengles.GL10;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -38,6 +39,8 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
     private LinkedList<TexturedAlignedRect> tempTextureObjects = new LinkedList<TexturedAlignedRect>();
     private LinkedList<Animator> animatorObjects = new LinkedList<Animator>();
+
+    private LinkedList<TexturedAlignedRect> destroyList = new LinkedList<TexturedAlignedRect>();
 
     public GameSurfaceRenderer(GameState gameState, GameSurfaceView gameSurfaceView) {
         mGameState = gameState;
@@ -110,7 +113,7 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
         // Draw things that require blending
         GLES20.glEnable(GLES20.GL_BLEND);
-        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         textScore.draw();
         textStatic.draw();
         for(TexturedAlignedRect r:tempTextureObjects) {
@@ -119,6 +122,10 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         GLES20.glDisable(GLES20.GL_BLEND);
 
         mGameState.updateRenderTime();
+
+        // Get rid of objects we can delete
+        gcAnimators();
+        gcTempObjects();
 
         // After everything's done, swap buffers
         mSurfaceView.requestRender();
@@ -168,8 +175,27 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         }
     }
 
-    public void deleteTempObject(BaseRect r) {
-        tempTextureObjects.remove((Object)r);
+    private void gcTempObjects() {
+        Iterator<TexturedAlignedRect> destroyIterator = destroyList.iterator();
+        while(destroyIterator.hasNext()) {
+            TexturedAlignedRect theObj = destroyIterator.next();
+            destroyIterator.remove();
+            theObj = null;
+        }
+    }
+
+    private void gcAnimators() {
+        Iterator<Animator> animIterator = animatorObjects.iterator();
+        while(animIterator.hasNext()) {
+            Animator tempObj = animIterator.next();
+            if(tempObj.canGarbageCollect()) {
+                animIterator.remove();
+            }
+        }
+    }
+
+    public void deleteTempObject(TexturedAlignedRect r) {
+        destroyList.add(r);
     }
 
     public void onViewPause(ConditionVariable syncObj) {

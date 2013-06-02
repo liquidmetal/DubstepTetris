@@ -12,6 +12,7 @@ public class Animator {
     private double duration;
     private long startTimestamp = -1;
     private long endTimestamp;
+    private boolean canRemove = false;
 
     public Animator(double duration) {
         this.duration = duration;
@@ -31,6 +32,7 @@ public class Animator {
         long diff = (new Date()).getTime() - startTimestamp;
 
         if(diff >= duration) {
+            canRemove = true;
             return 1.0;
         }
 
@@ -39,7 +41,10 @@ public class Animator {
 
     public void reset() {
         startTimestamp = -1;
+        canRemove = false;
     }
 
-
+    public boolean canGarbageCollect() {
+        return canRemove;
+    }
 }

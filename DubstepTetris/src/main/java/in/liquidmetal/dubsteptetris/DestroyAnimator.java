@@ -6,7 +6,7 @@ import java.util.LinkedList;
  * Created by utkarsh on 2/6/13.
  */
 public class DestroyAnimator extends Animator {
-    private LinkedList<BaseRect> objsToDestroy = new LinkedList<BaseRect>();
+    private LinkedList<TexturedAlignedRect> objsToDestroy = new LinkedList<TexturedAlignedRect>();
     GameSurfaceRenderer renderer;
 
     public DestroyAnimator(double duration, GameSurfaceRenderer renderer) {
@@ -15,7 +15,7 @@ public class DestroyAnimator extends Animator {
         this.renderer = renderer;
     }
 
-    public void addObject(BaseRect obj) {
+    public void addObject(TexturedAlignedRect obj) {
         objsToDestroy.add(obj);
     }
 
@@ -23,7 +23,7 @@ public class DestroyAnimator extends Animator {
         double value = super.update();
 
         if(value>=1.0) {
-            for(BaseRect r:objsToDestroy) {
+            for(TexturedAlignedRect r:objsToDestroy) {
                 renderer.deleteTempObject(r);
             }
         }

@@ -31,7 +31,7 @@ public class TexturedAlignedRect extends BaseRect {
             //"    gl_FragColor = vec4(v_texCoord, 0.0, 1.0);"+  // debug: display UVs
             "    vec4 sampleColor = texture2D(u_texture, v_texCoord);" +
             "    sampleColor.a = sampleColor.a*alpha_multiplier;" +
-            "    gl_FragColor = vec4(sampleColor.r*sampleColor.a, sampleColor.g*sampleColor.a, sampleColor.b*sampleColor.a, sampleColor.a);" +
+            "    gl_FragColor = vec4(sampleColor.r, sampleColor.g, sampleColor.b, sampleColor.a);" +
             "}";
 
     private static FloatBuffer sVertexBuffer = getVertexArray();
