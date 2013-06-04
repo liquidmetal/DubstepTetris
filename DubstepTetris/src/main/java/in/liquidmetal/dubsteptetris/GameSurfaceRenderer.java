@@ -62,6 +62,9 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         textStatic.setAlphaMultiplier(0.5f);
 
         GLES20.glDisable(GLES20.GL_CULL_FACE);
+
+        mGameState.initialize();
+
         bSurfaceCreated = true;
     }
 
@@ -101,15 +104,22 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         }
     }
 
+    public void addAnimator(Animator obj) {
+        animatorObjects.add(obj);
+    }
+
+    public boolean anyAnimatorActive() {
+        return (animatorObjects.size()>0);
+    }
+
     @Override
     public void onDrawFrame(GL10 gl10) {
         mGameState.calculateNextFrame();
         updateAnimators();
 
         mGameState.clearScreen();
+        mGameState.drawGame();
 
-        mGameState.drawBoard();
-        mGameState.drawNextPiece();
 
         // Draw things that require blending
         GLES20.glEnable(GLES20.GL_BLEND);

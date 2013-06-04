@@ -111,21 +111,61 @@ public class GameState {
     private long infinityTime = 2500;
     private long lastRotateTime = 0;
 
+    private long STATE_UNINITIALIZED = -1;
+    private long STATE_LOADING = 0;
+    private long STATE_INITIAL_ANIMATION = 1;
+    private long STATE_COUNTDOWN = 2;
+    private long STATE_GAMEPLAY = 3;
+    private long STATE_GAMEOVER = 4;
+
+    private long currentState = STATE_UNINITIALIZED;
+
+    /////////////////////////////////////////////////////////////////////
+    // Stuff used for the pre-first-game animation.
+    private AlignedRect arenaRect;
+
     // Used for the true tetris random generator
     private boolean[] currentBag = new boolean[TETRAMINO_TOTAL];
+
+    public GameState() {
+        currentState = STATE_UNINITIALIZED;
+        // Do some initialization here
+
+        currentState = STATE_LOADING;
+        // Do some loading here
+
+
+    }
+
+    private void initializeInitialAnimation() {
+        arenaRect = new AlignedRect();
+        arenaRect.setPosition(BOARD_LEFT + BOARD_WIDTH/2 - 25, BOARD_BOTTOM + BOARD_HEIGHT/2 - 25);
+        arenaRect.setColor(0,0,0);
+        arenaRect.setScale(0.01f, 0.01f);
+        ScaleAnimator animObj = new ScaleAnimator(500, arenaRect, BOARD_WIDTH, BOARD_HEIGHT);
+        animObj.start();
+        myRenderer.addAnimator(animObj);
+    }
 
     public void setRenderer(GameSurfaceRenderer renderer) {
         myRenderer = renderer;
     }
 
+    public void initialize() {
+        initializeInitialAnimation();
+
+        currentState = STATE_INITIAL_ANIMATION;
+    }
+
     public void initializeBoard() {
+
         initializeColors();
         float cellSize = BOARD_HEIGHT / numCellsY;
         for(int y=0;y<numCellsY;y++)
             for(int x=0;x<numCellsX;x++) {
                 board[y][x] = new AlignedRect();
                 board[y][x].setColor(0,0,0);
-                board[y][x].setPosition(BOARD_LEFT + x*cellSize - cellSize/2, BOARD_BOTTOM+y*cellSize - cellSize/2);
+                board[y][x].setPosition(BOARD_LEFT + x*cellSize-cellSize/2, BOARD_BOTTOM+y*cellSize-cellSize/2);
                 board[y][x].setScale(cellSize,cellSize);
                 board_representation[y][x] = TETRAMINO_EMPTY;
             }
@@ -166,6 +206,7 @@ public class GameState {
             currentBag[i] = false;
 
         createNewTetramino();
+        currentState = STATE_GAMEPLAY;
     }
 
     public long getScore() {
@@ -346,6 +387,15 @@ public class GameState {
         }
     }
 
+    public void drawGame() {
+        if(currentState == STATE_GAMEPLAY) {
+            drawBoard();
+            drawNextPiece();
+        } else if (currentState == STATE_INITIAL_ANIMATION) {
+            arenaRect.draw();
+        }
+    }
+
     public void drawBoard() {
         for(int y=0;y<numCellsY;y++)
             for(int x=0;x<numCellsX;x++)
@@ -363,27 +413,34 @@ public class GameState {
     public void calculateNextFrame() {
         long timeNow = new Date().getTime();
 
-        if(timeNow - lastDropTime > dropRate) {
-            dropTetramino();
-        }
+        if(currentState == STATE_GAMEPLAY) {
+            if(timeNow - lastDropTime > dropRate) {
+                dropTetramino();
+            }
 
-        // We tetraminos are above the danger line (2nd last line)
-        // do the animation!
-        boolean isEmpty = true;
-        for(int x=0;x<numCellsX;x++) {
-            long value = board_representation[16][x];
-            if(value>TETRAMINO_EMPTY && value<TETRAMINO_TOTAL) {
-                animBgDanger.start();
-                isEmpty = false;
+            // We tetraminos are above the danger line (2nd last line)
+            // do the animation!
+            boolean isEmpty = true;
+            for(int x=0;x<numCellsX;x++) {
+                long value = board_representation[16][x];
+                if(value>TETRAMINO_EMPTY && value<TETRAMINO_TOTAL) {
+                    animBgDanger.start();
+                    isEmpty = false;
+                }
+            }
+
+            if(isEmpty)
+                animBgDanger.reverse();
+
+            animBgDanger.update();
+
+            backgroundColor = animBgDanger.getCurrentColor();
+        } else if(currentState == STATE_INITIAL_ANIMATION) {
+            // Do the initial animation thing
+            if(!myRenderer.anyAnimatorActive()) {
+                currentState = STATE_GAMEPLAY;
             }
         }
-
-        if(isEmpty)
-            animBgDanger.reverse();
-
-        animBgDanger.update();
-
-        backgroundColor = animBgDanger.getCurrentColor();
     }
 
     private void dropTetramino() {
