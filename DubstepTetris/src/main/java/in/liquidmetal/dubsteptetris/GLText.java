@@ -15,7 +15,7 @@ import android.util.Log;
  * onto an OpenGL surface
  */
 public class GLText extends TexturedAlignedRect {
-    private String text;
+    private String text = "";
     private int fontSize, shadowRadius, shadowOffset;
     private int textureID = -1;
     private int textColor;
@@ -43,6 +43,10 @@ public class GLText extends TexturedAlignedRect {
     }
 
     public void setText(String text) {
+        // IF the text didn't change, we have nothing to do
+        if(this.text.equals(text))
+            return;
+
         this.text = text;
         updateTexture();
     }

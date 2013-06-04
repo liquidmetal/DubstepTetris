@@ -481,48 +481,10 @@ public class GameState {
         int[][] currentStage = stages[currentTetramino][rotationStage];
 
         int trueBottom = 0, trueLeft = 0, trueRight = 0;
-
-        for(int i=currentStage.length-1;i>=0;i--) {
-            boolean isRowEmpty = true;
-            for(int j=0;j<currentStage.length;j++) {
-                if(currentStage[i][j]==1) {
-                    isRowEmpty = false;
-                    trueBottom = i;
-                    break;
-                }
-            }
-
-            if(isRowEmpty==false)
-                break;
-        }
-
-        for(int j=0;j<currentStage.length;j++) {
-            boolean isRowEmpty = true;
-            for(int i=0;i<currentStage.length;i++) {
-                if(currentStage[i][j]==1) {
-                    isRowEmpty = false;
-                    trueLeft = j;
-                    break;
-                }
-            }
-
-            if(!isRowEmpty)
-                break;
-        }
-
-        for(int j=currentStage.length-1;j>=0;j--) {
-            boolean isRowEmpty = true;
-            for(int i=0;i<currentStage.length;i++) {
-                if(currentStage[i][j]==1) {
-                    isRowEmpty = false;
-                    trueRight = j;
-                    break;
-                }
-            }
-
-            if(!isRowEmpty)
-                break;
-        }
+        int[] ret = getTrueBounds(currentStage);
+        trueBottom = ret[0];
+        trueLeft = ret[1];
+        trueRight = ret[2];
 
         //if(trueLeft==trueRight)
         //    trueLeft -= 1;
@@ -567,8 +529,9 @@ public class GameState {
                         }
                     }
 
-                    if(hitTrueBottom)
+                    if(hitTrueBottom) {
                         break;
+                    }
 
                     if(!collides)
                         y--;
@@ -761,6 +724,7 @@ public class GameState {
         haltForceDrop = false;
     }
 
+    // Returns bottom, left, right
     private int[] getTrueBounds(int[][] currentStage) {
         int trueBottom = 0, trueLeft = 0, trueRight = 0;
 

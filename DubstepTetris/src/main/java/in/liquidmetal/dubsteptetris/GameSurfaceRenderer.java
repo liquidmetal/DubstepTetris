@@ -187,6 +187,13 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         }
     }
 
+    // This method enables other classes to set some piece of text to be displayed
+    // on the game window. For debug purposes only - generating a new debug string
+    // each frame is expensive
+    public void setDebugText(String text) {
+        textStatic.setText(text);
+    }
+
     private void gcTempObjects() {
         Iterator<TexturedAlignedRect> destroyIterator = destroyList.iterator();
         while(destroyIterator.hasNext()) {
