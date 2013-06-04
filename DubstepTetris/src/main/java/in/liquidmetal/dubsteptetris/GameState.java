@@ -123,6 +123,7 @@ public class GameState {
     /////////////////////////////////////////////////////////////////////
     // Stuff used for the pre-first-game animation.
     private AlignedRect arenaRect;
+    private GLText textThree, textTwo, textOne, textGo;
 
     // Used for the true tetris random generator
     private boolean[] currentBag = new boolean[TETRAMINO_TOTAL];
@@ -138,13 +139,44 @@ public class GameState {
     }
 
     private void initializeInitialAnimation() {
+        textThree = new GLText(128, 128, "3", 72, 0, 0);
+        textTwo = new GLText(128, 128, "2", 72, 0, 0);
+        textOne = new GLText(128, 128, "1", 72, 0, 0);
+        textGo = new GLText(128, 128, "GO!", 72, 0, 0);
+
+        textThree.setAlphaMultiplier(0.0f);
+        textTwo.setAlphaMultiplier(0.0f);
+        textOne.setAlphaMultiplier(0.0f);
+        textGo.setAlphaMultiplier(0.0f);
+
+        textThree.setPosition(360, 360);
+        textTwo.setPosition(360, 360);
+        textOne.setPosition(360, 360);
+        textGo.setPosition(360, 360);
+
+
         arenaRect = new AlignedRect();
         arenaRect.setPosition(BOARD_LEFT + BOARD_WIDTH/2 - 25, BOARD_BOTTOM + BOARD_HEIGHT/2 - 25);
         arenaRect.setColor(0,0,0);
         arenaRect.setScale(0.01f, 0.01f);
         ScaleAnimator animObj = new ScaleAnimator(500, arenaRect, BOARD_WIDTH, BOARD_HEIGHT);
         animObj.start();
+
+        OpacityAnimator threeAnimator = new OpacityAnimator(1000, textThree, 0.0f, 1.0f);
+        OpacityAnimator twoAnimator = new OpacityAnimator(1000, textTwo, 0.0f, 1.0f);
+        OpacityAnimator oneAnimator = new OpacityAnimator(1000, textOne, 0.0f, 1.0f);
+        OpacityAnimator goAnimator = new OpacityAnimator(1000, textGo, 0.0f, 1.0f);
+
+        threeAnimator.startWhenEnds(animObj);
+        twoAnimator.startWhenEnds(threeAnimator);
+        oneAnimator.startWhenEnds(twoAnimator);
+        goAnimator.startWhenEnds(oneAnimator);
+
         myRenderer.addAnimator(animObj);
+        myRenderer.addAnimator(threeAnimator);
+        myRenderer.addAnimator(twoAnimator);
+        myRenderer.addAnimator(oneAnimator);
+        myRenderer.addAnimator(goAnimator);
     }
 
     public void setRenderer(GameSurfaceRenderer renderer) {
@@ -393,6 +425,20 @@ public class GameState {
             drawNextPiece();
         } else if (currentState == STATE_INITIAL_ANIMATION) {
             arenaRect.draw();
+
+        }
+    }
+
+    public void drawText() {
+        if(currentState == STATE_GAMEPLAY) {
+            //drawBoard();
+            //drawNextPiece();
+        } else if (currentState == STATE_INITIAL_ANIMATION) {
+            //arenaRect.draw();
+            textThree.draw();
+            textTwo.draw();
+            textOne.draw();
+            textGo.draw();
         }
     }
 

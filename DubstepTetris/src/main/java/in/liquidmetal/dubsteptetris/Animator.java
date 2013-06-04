@@ -14,6 +14,8 @@ public class Animator {
     private long endTimestamp;
     private boolean canRemove = false;
 
+    private Animator animatorToCheck = null;
+
     public Animator(double duration) {
         this.duration = duration;
     }
@@ -25,7 +27,16 @@ public class Animator {
         startTimestamp = (new Date()).getTime();
     }
 
+    public void startWhenEnds(Animator anim) {
+        animatorToCheck = anim;
+    }
+
     public double update() {
+        if(animatorToCheck!=null && startTimestamp==-1 && animatorToCheck.canGarbageCollect()) {
+            start();
+            return 0;
+        }
+
         if(startTimestamp==-1)
             return 0;
 
