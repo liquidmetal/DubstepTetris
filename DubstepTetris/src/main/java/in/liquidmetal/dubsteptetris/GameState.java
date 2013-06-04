@@ -107,6 +107,10 @@ public class GameState {
     private GameSurfaceRenderer myRenderer;
     private boolean haltForceDrop = false;
 
+    // Infinity spin time
+    private long infinityTime = 2500;
+    private long lastRotateTime = 0;
+
     // Used for the true tetris random generator
     private boolean[] currentBag = new boolean[TETRAMINO_TOTAL];
 
@@ -394,13 +398,16 @@ public class GameState {
 
         if(canDrop) {
             boolean didFirstRowChanges = false;
-            for(int y=1;y<numCellsY+2;y++)
+            outerLoop:for(int y=0;y<numCellsY+2;y++)
                 for(int x=0;x<numCellsX;x++) {
                     if(board_representation[y][x] >= TETRAMINO_TOTAL) {
+                        if(y==0) {
+                            didFirstRowChanges = true;
+                            break outerLoop;
+                        }
+
                         board_representation[y-1][x] = board_representation[y][x];
                         board_representation[y][x] = TETRAMINO_EMPTY;
-                        if(y==1)
-                            didFirstRowChanges = true;
                     }
                 }
 
