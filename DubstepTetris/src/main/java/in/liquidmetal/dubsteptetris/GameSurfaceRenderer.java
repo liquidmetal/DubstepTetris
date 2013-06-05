@@ -57,7 +57,7 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         textScore = new GLText(300, 300, "ABCD", 100, 0, 0);
         textScore.setPosition(700, 1000);
 
-        textStatic = new GLText(300, 300, "static", 100, 0, 0);
+        textStatic = new GLText(300, 300, "static", 24, 0, 0);
         textStatic.setPosition(700, 700);
         textStatic.setAlphaMultiplier(0.5f);
 

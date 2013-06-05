@@ -10,6 +10,8 @@ import java.util.Date;
  */
 public class Animator {
     private double duration;
+    private long startDelayedTimestamp = -1;
+    private long delay = -1;
     private long startTimestamp = -1;
     private long endTimestamp;
     private boolean canRemove = false;
@@ -18,6 +20,14 @@ public class Animator {
 
     public Animator(double duration) {
         this.duration = duration;
+    }
+
+    public void startDelayed(int delay) {
+        if(startDelayedTimestamp!=-1)
+            return;
+
+        startDelayedTimestamp = (new Date()).getTime();
+        this.delay = delay;
     }
 
     public void start() {
@@ -37,10 +47,18 @@ public class Animator {
             return 0;
         }
 
+        long diffDelayed = (new Date()).getTime() - startDelayedTimestamp;
+        if(startDelayedTimestamp!=-1) {
+            if(diffDelayed>=delay)
+                start();
+        }
+
+
+        long diff = (new Date()).getTime() - startTimestamp;
         if(startTimestamp==-1)
             return 0;
 
-        long diff = (new Date()).getTime() - startTimestamp;
+
 
         if(diff >= duration) {
             canRemove = true;

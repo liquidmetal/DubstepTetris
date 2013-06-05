@@ -123,8 +123,10 @@ public class GameState {
     /////////////////////////////////////////////////////////////////////
     // Stuff used for the pre-first-game animation.
     private AlignedRect arenaRect;
+    private AlignedRect scoreRect;
     private GLText textThree, textTwo, textOne, textGo;
     private ScaleAnimator arenaRectAnimator;
+    private ScaleAnimator scoreRectAnimator;
 
     // Used for the true tetris random generator
     private boolean[] currentBag = new boolean[TETRAMINO_TOTAL];
@@ -140,17 +142,22 @@ public class GameState {
     }
 
     private void initializeInitialAnimation() {
-
-
-
         arenaRect = new AlignedRect();
-        arenaRect.setPosition(BOARD_LEFT + BOARD_WIDTH/2 - 25, BOARD_BOTTOM + BOARD_HEIGHT/2 - 25);
+        arenaRect.setPosition(BOARD_LEFT + BOARD_WIDTH/2 - 50, BOARD_BOTTOM + BOARD_HEIGHT/2 - 50);
         arenaRect.setColor(0,0,0);
         arenaRect.setScale(0.01f, 0.01f);
         arenaRectAnimator = new ScaleAnimator(500, arenaRect, BOARD_WIDTH, BOARD_HEIGHT);
         arenaRectAnimator.start();
 
+        scoreRect = new AlignedRect();
+        scoreRect.setPosition(BOARD_LEFT+BOARD_WIDTH+8, BOARD_BOTTOM+BOARD_HEIGHT-216);
+        scoreRect.setColor(0,0,0);
+        scoreRect.setScale(0.01f, 0.01f);
+        scoreRectAnimator = new ScaleAnimator(300, scoreRect, 128f, 128f);
+        scoreRectAnimator.startDelayed(200);
+
         myRenderer.addAnimator(arenaRectAnimator);
+        myRenderer.addAnimator(scoreRectAnimator);
 
     }
 
@@ -175,7 +182,7 @@ public class GameState {
         OpacityAnimator oneAnimator = new OpacityAnimator(1000, textOne, 0.0f, 1.0f);
         OpacityAnimator goAnimator = new OpacityAnimator(1000, textGo, 0.0f, 1.0f);
 
-        threeAnimator.startWhenEnds(arenaRectAnimator);
+        threeAnimator.startWhenEnds(scoreRectAnimator);
         twoAnimator.startWhenEnds(threeAnimator);
         oneAnimator.startWhenEnds(twoAnimator);
         goAnimator.startWhenEnds(oneAnimator);
@@ -246,6 +253,7 @@ public class GameState {
             currentBag[i] = false;
 
         createNewTetramino();
+
         currentState = STATE_GAMEPLAY;
     }
 
@@ -440,8 +448,10 @@ public class GameState {
             drawNextPiece();
         } else if (currentState == STATE_INITIAL_ANIMATION) {
             arenaRect.draw();
+            scoreRect.draw();
         } else if(currentState == STATE_COUNTDOWN) {
             arenaRect.draw();
+            scoreRect.draw();
         }
     }
 
@@ -500,7 +510,7 @@ public class GameState {
 
             backgroundColor = animBgDanger.getCurrentColor();
         } else if(currentState == STATE_INITIAL_ANIMATION) {
-            if(arenaRectAnimator!=null && arenaRectAnimator.canGarbageCollect()) {
+            if(scoreRectAnimator!=null && scoreRectAnimator.canGarbageCollect()) {
                 currentState = STATE_COUNTDOWN;
             }
         } else if(currentState == STATE_COUNTDOWN) {
