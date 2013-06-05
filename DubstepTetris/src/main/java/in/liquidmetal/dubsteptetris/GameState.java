@@ -124,6 +124,7 @@ public class GameState {
     // Stuff used for the pre-first-game animation.
     private AlignedRect arenaRect;
     private GLText textThree, textTwo, textOne, textGo;
+    private ScaleAnimator arenaRectAnimator;
 
     // Used for the true tetris random generator
     private boolean[] currentBag = new boolean[TETRAMINO_TOTAL];
@@ -139,6 +140,21 @@ public class GameState {
     }
 
     private void initializeInitialAnimation() {
+
+
+
+        arenaRect = new AlignedRect();
+        arenaRect.setPosition(BOARD_LEFT + BOARD_WIDTH/2 - 25, BOARD_BOTTOM + BOARD_HEIGHT/2 - 25);
+        arenaRect.setColor(0,0,0);
+        arenaRect.setScale(0.01f, 0.01f);
+        arenaRectAnimator = new ScaleAnimator(500, arenaRect, BOARD_WIDTH, BOARD_HEIGHT);
+        arenaRectAnimator.start();
+
+        myRenderer.addAnimator(arenaRectAnimator);
+
+    }
+
+    public void initializeCountdown() {
         textThree = new GLText(128, 128, "3", 72, 0, 0);
         textTwo = new GLText(128, 128, "2", 72, 0, 0);
         textOne = new GLText(128, 128, "1", 72, 0, 0);
@@ -154,25 +170,16 @@ public class GameState {
         textOne.setPosition(360, 360);
         textGo.setPosition(360, 360);
 
-
-        arenaRect = new AlignedRect();
-        arenaRect.setPosition(BOARD_LEFT + BOARD_WIDTH/2 - 25, BOARD_BOTTOM + BOARD_HEIGHT/2 - 25);
-        arenaRect.setColor(0,0,0);
-        arenaRect.setScale(0.01f, 0.01f);
-        ScaleAnimator animObj = new ScaleAnimator(500, arenaRect, BOARD_WIDTH, BOARD_HEIGHT);
-        animObj.start();
-
         OpacityAnimator threeAnimator = new OpacityAnimator(1000, textThree, 0.0f, 1.0f);
         OpacityAnimator twoAnimator = new OpacityAnimator(1000, textTwo, 0.0f, 1.0f);
         OpacityAnimator oneAnimator = new OpacityAnimator(1000, textOne, 0.0f, 1.0f);
         OpacityAnimator goAnimator = new OpacityAnimator(1000, textGo, 0.0f, 1.0f);
 
-        threeAnimator.startWhenEnds(animObj);
+        threeAnimator.startWhenEnds(arenaRectAnimator);
         twoAnimator.startWhenEnds(threeAnimator);
         oneAnimator.startWhenEnds(twoAnimator);
         goAnimator.startWhenEnds(oneAnimator);
 
-        myRenderer.addAnimator(animObj);
         myRenderer.addAnimator(threeAnimator);
         myRenderer.addAnimator(twoAnimator);
         myRenderer.addAnimator(oneAnimator);
@@ -185,6 +192,7 @@ public class GameState {
 
     public void initialize() {
         initializeInitialAnimation();
+        initializeCountdown();
 
         currentState = STATE_INITIAL_ANIMATION;
     }
@@ -263,7 +271,8 @@ public class GameState {
                         board_representation[hiddenRowSecond][4] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowSecond][5] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowSecond][6] != TETRAMINO_EMPTY) {
-                    initializeBoard();
+                    initializeCountdown();
+                    currentState = STATE_COUNTDOWN;
                     break;
                 }
 
@@ -279,7 +288,8 @@ public class GameState {
                         board_representation[hiddenRowSecond][4] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowSecond][5] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowFirst][3] != TETRAMINO_EMPTY) {
-                    initializeBoard();
+                    initializeCountdown();
+                    currentState = STATE_COUNTDOWN;
                     break;
                 }
 
@@ -294,7 +304,8 @@ public class GameState {
                         board_representation[hiddenRowSecond][4] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowSecond][5] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowFirst][5] != TETRAMINO_EMPTY) {
-                    initializeBoard();
+                    initializeCountdown();
+                    currentState = STATE_COUNTDOWN;
                     break;
                 }
 
@@ -309,7 +320,8 @@ public class GameState {
                         board_representation[hiddenRowSecond][6] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowFirst][5] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowFirst][6] != TETRAMINO_EMPTY) {
-                    initializeBoard();
+                    initializeCountdown();
+                    currentState = STATE_COUNTDOWN;
                     break;
                 }
 
@@ -324,7 +336,8 @@ public class GameState {
                         board_representation[hiddenRowFirst][4] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowSecond][4] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowSecond][3] != TETRAMINO_EMPTY) {
-                    initializeBoard();
+                    initializeCountdown();
+                    currentState = STATE_COUNTDOWN;
                     break;
                 }
 
@@ -339,7 +352,8 @@ public class GameState {
                         board_representation[hiddenRowFirst][4] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowSecond][4] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowSecond][5] != TETRAMINO_EMPTY) {
-                    initializeBoard();
+                    initializeCountdown();
+                    currentState = STATE_COUNTDOWN;
                     break;
                 }
 
@@ -354,7 +368,8 @@ public class GameState {
                         board_representation[hiddenRowFirst][3] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowSecond][4] != TETRAMINO_EMPTY ||
                         board_representation[hiddenRowSecond][5] != TETRAMINO_EMPTY) {
-                    initializeBoard();
+                    initializeCountdown();
+                    currentState = STATE_COUNTDOWN;
                     break;
                 }
 
@@ -425,7 +440,8 @@ public class GameState {
             drawNextPiece();
         } else if (currentState == STATE_INITIAL_ANIMATION) {
             arenaRect.draw();
-
+        } else if(currentState == STATE_COUNTDOWN) {
+            arenaRect.draw();
         }
     }
 
@@ -434,7 +450,9 @@ public class GameState {
             //drawBoard();
             //drawNextPiece();
         } else if (currentState == STATE_INITIAL_ANIMATION) {
-            //arenaRect.draw();
+            // Something
+
+        } else if (currentState == STATE_COUNTDOWN) {
             textThree.draw();
             textTwo.draw();
             textOne.draw();
@@ -482,8 +500,13 @@ public class GameState {
 
             backgroundColor = animBgDanger.getCurrentColor();
         } else if(currentState == STATE_INITIAL_ANIMATION) {
+            if(arenaRectAnimator!=null && arenaRectAnimator.canGarbageCollect()) {
+                currentState = STATE_COUNTDOWN;
+            }
+        } else if(currentState == STATE_COUNTDOWN) {
             // Do the initial animation thing
             if(!myRenderer.anyAnimatorActive()) {
+                initializeBoard();
                 currentState = STATE_GAMEPLAY;
             }
         }
