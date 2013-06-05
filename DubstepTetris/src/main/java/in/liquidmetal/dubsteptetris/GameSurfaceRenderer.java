@@ -41,6 +41,7 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     private LinkedList<Animator> animatorObjects = new LinkedList<Animator>();
 
     private LinkedList<TexturedAlignedRect> destroyList = new LinkedList<TexturedAlignedRect>();
+    private GLBackground background;
 
     public GameSurfaceRenderer(GameState gameState, GameSurfaceView gameSurfaceView) {
         mGameState = gameState;
@@ -64,6 +65,7 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         GLES20.glDisable(GLES20.GL_CULL_FACE);
 
         mGameState.initialize();
+        background = new GLBackground();
 
         bSurfaceCreated = true;
     }
@@ -115,9 +117,16 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     @Override
     public void onDrawFrame(GL10 gl10) {
         mGameState.calculateNextFrame();
+        background.update();
         updateAnimators();
 
         mGameState.clearScreen();
+
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        background.draw();
+        GLES20.glDisable(GLES20.GL_BLEND);
+
         mGameState.drawGame();
 
 
