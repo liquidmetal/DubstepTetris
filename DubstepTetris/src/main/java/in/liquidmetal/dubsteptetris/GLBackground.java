@@ -13,7 +13,7 @@ import java.util.LinkedList;
  */
 public class GLBackground {
     private class Particle {
-        private final long MAX_AGE = 1000;
+        private long MAX_AGE = 1000;
 
         private float vx, vy;
         private float px, py;
@@ -33,6 +33,8 @@ public class GLBackground {
             rect.setPosition(px, py);
             rect.setScale(sx, sy);
             rect.setColor(0,0,1);
+
+            MAX_AGE += (float)Math.random() * 1000 -500f;
         }
 
         public void draw() {
@@ -45,7 +47,7 @@ public class GLBackground {
 
             rect.setPosition(px, py);
 
-            age += timeDelta;
+            age += timeDelta
 
             if(age>MAX_AGE && Math.random()>0.5)
                 return false;
