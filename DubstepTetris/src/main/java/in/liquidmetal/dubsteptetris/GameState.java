@@ -118,6 +118,15 @@ public class GameState {
     private long STATE_GAMEPLAY = 3;
     private long STATE_GAMEOVER = 4;
 
+    private long STATE_INTRO_0 = 0; // Follow through the tutorial (+skip)
+    private long STATE_INTRO_1 = 1; // (swipe left/right)
+    private long STATE_INTRO_2 = 2; // (how to rotate)
+    private long STATE_INTRO_3 = 3; // (swipe down)
+    private long STATE_INTRO_4 = 4; // That's all there is!
+
+    // Used for pausing the game
+    private boolean haltGame = false;
+
     private long currentState = STATE_UNINITIALIZED;
 
     /////////////////////////////////////////////////////////////////////
