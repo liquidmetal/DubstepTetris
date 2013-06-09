@@ -18,6 +18,8 @@ import in.liquidmetal.dubsteptetris.anim.AlphaAnimator;
 import in.liquidmetal.dubsteptetris.anim.Animator;
 import in.liquidmetal.dubsteptetris.anim.DestroyAnimator;
 import in.liquidmetal.dubsteptetris.anim.PositionAnimator;
+import in.liquidmetal.dubsteptetris.ui.GLBackground;
+import in.liquidmetal.dubsteptetris.ui.GLText;
 
 /**
  * Created by utkarsh on 26/5/13.

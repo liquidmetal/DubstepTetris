@@ -1,4 +1,6 @@
-package in.liquidmetal.dubsteptetris;
+package in.liquidmetal.dubsteptetris.ui;
+
+import in.liquidmetal.dubsteptetris.TexturedAlignedRect;
 
 /**
  * Created by utkarsh on 6/6/13.

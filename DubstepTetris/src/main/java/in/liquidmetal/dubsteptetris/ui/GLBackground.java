@@ -1,4 +1,4 @@
-package in.liquidmetal.dubsteptetris;
+package in.liquidmetal.dubsteptetris.ui;
 
 
 import android.sax.TextElementListener;
@@ -6,6 +6,8 @@ import android.sax.TextElementListener;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import in.liquidmetal.dubsteptetris.AlignedRect;
 
 /**
  * Created by utkarsh on 5/6/13.

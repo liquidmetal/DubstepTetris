@@ -1,4 +1,4 @@
-package in.liquidmetal.dubsteptetris;
+package in.liquidmetal.dubsteptetris.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -8,6 +8,8 @@ import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
+
+import in.liquidmetal.dubsteptetris.TexturedAlignedRect;
 
 /**
  * Created by utkarsh on 30/5/13.

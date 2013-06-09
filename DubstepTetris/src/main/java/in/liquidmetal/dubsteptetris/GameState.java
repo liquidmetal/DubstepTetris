@@ -8,6 +8,7 @@ import java.util.Date;
 import in.liquidmetal.dubsteptetris.anim.ColorAnimator;
 import in.liquidmetal.dubsteptetris.anim.OpacityAnimator;
 import in.liquidmetal.dubsteptetris.anim.ScaleAnimator;
+import in.liquidmetal.dubsteptetris.ui.GLText;
 
 /**
  * Created by utkarsh on 26/5/13.
