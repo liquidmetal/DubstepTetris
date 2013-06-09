@@ -5,6 +5,10 @@ import android.util.Log;
 
 import java.util.Date;
 
+import in.liquidmetal.dubsteptetris.anim.ColorAnimator;
+import in.liquidmetal.dubsteptetris.anim.OpacityAnimator;
+import in.liquidmetal.dubsteptetris.anim.ScaleAnimator;
+
 /**
  * Created by utkarsh on 26/5/13.
  */
@@ -123,6 +127,7 @@ public class GameState {
     private long STATE_INTRO_2 = 2; // (how to rotate)
     private long STATE_INTRO_3 = 3; // (swipe down)
     private long STATE_INTRO_4 = 4; // That's all there is!
+    private long STATE_INTRO_5 = 5; // Went through the entire sequence
 
     // Used for pausing the game
     private boolean haltGame = false;
@@ -146,8 +151,6 @@ public class GameState {
 
         currentState = STATE_LOADING;
         // Do some loading here
-
-
     }
 
     private void initializeInitialAnimation() {

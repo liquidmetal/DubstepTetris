@@ -1,4 +1,7 @@
-package in.liquidmetal.dubsteptetris;
+package in.liquidmetal.dubsteptetris.anim;
+
+import in.liquidmetal.dubsteptetris.BaseRect;
+import in.liquidmetal.dubsteptetris.anim.Animator;
 
 /**
  * Created by utkarsh on 1/6/13.

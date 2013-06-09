@@ -1,19 +1,13 @@
 package in.liquidmetal.dubsteptetris;
 
-import android.view.View.OnClickListener;
-
-class Clickable {
-
-}
-
 /**
  * Created by utkarsh on 6/6/13.
  */
 public class GLButton extends TexturedAlignedRect {
-    private OnClickListener myListener;
+    private Clickable myListener;
 
-    public GLButton() {
-
+    public GLButton(Clickable newListener) {
+        myListener = newListener;
     }
 
     public void TestClick(int x, int y) {

@@ -1,6 +1,6 @@
-package in.liquidmetal.dubsteptetris;
+package in.liquidmetal.dubsteptetris.anim;
 
-import java.util.LinkedList;
+import in.liquidmetal.dubsteptetris.TexturedAlignedRect;
 
 /**
  * Created by utkarsh on 2/6/13.

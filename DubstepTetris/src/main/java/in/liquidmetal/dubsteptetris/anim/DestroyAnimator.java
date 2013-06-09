@@ -1,6 +1,10 @@
-package in.liquidmetal.dubsteptetris;
+package in.liquidmetal.dubsteptetris.anim;
 
 import java.util.LinkedList;
+
+import in.liquidmetal.dubsteptetris.GameSurfaceRenderer;
+import in.liquidmetal.dubsteptetris.TexturedAlignedRect;
+import in.liquidmetal.dubsteptetris.anim.Animator;
 
 /**
  * Created by utkarsh on 2/6/13.

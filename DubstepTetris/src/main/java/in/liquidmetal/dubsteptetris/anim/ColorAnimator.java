@@ -1,4 +1,6 @@
-package in.liquidmetal.dubsteptetris;
+package in.liquidmetal.dubsteptetris.anim;
+
+import in.liquidmetal.dubsteptetris.anim.Animator;
 
 /**
  * Created by utkarsh on 29/5/13.
