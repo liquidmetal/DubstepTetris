@@ -28,9 +28,12 @@ public class MainActivity extends Activity {
 
         // Setup a new game surface view. This would handle everything
         // that we ever draw.
-        mGLView = new GameSurfaceView(this, mGameState);
+        mGLView = new GameSurfaceView(this, mGameState, getResources());
         setContentView(mGLView);
         mGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
+
+
     }
 
     @Override

@@ -49,7 +49,7 @@ public class GLBackground {
 
             rect.setPosition(px, py);
 
-            age += timeDelta
+            age += timeDelta;
 
             if(age>MAX_AGE && Math.random()>0.5)
                 return false;

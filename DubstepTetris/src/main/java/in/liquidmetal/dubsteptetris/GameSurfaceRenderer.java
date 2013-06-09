@@ -1,7 +1,12 @@
 package in.liquidmetal.dubsteptetris;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.os.ConditionVariable;
 import android.support.v4.view.GestureDetectorCompat;
@@ -17,7 +22,10 @@ import java.util.LinkedList;
 import in.liquidmetal.dubsteptetris.anim.AlphaAnimator;
 import in.liquidmetal.dubsteptetris.anim.Animator;
 import in.liquidmetal.dubsteptetris.anim.DestroyAnimator;
+import in.liquidmetal.dubsteptetris.anim.OpacityAnimator;
 import in.liquidmetal.dubsteptetris.anim.PositionAnimator;
+import in.liquidmetal.dubsteptetris.anim.Trigger;
+import in.liquidmetal.dubsteptetris.anim.TriggerAnimator;
 import in.liquidmetal.dubsteptetris.ui.GLBackground;
 import in.liquidmetal.dubsteptetris.ui.GLText;
 
@@ -25,6 +33,17 @@ import in.liquidmetal.dubsteptetris.ui.GLText;
  * Created by utkarsh on 26/5/13.
  */
 public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetector.OnGestureListener {
+    private enum eGameStates {
+        STATE_SPLASH,           // The initial splash screen
+        STATE_MAIN,             // The main menu
+        STATE_CHOOSE_LEVEL,     // On clicking "new game"
+        STATE_OPTIONS,          // On clicking "options"
+        STATE_HIGHSCORE,        // On clicking "High scores"
+        STATE_HELP,             // On clicking "Help"
+        STATE_QUIT,             // On clicking "Quit" - yes/no option
+        STATE_PLAYING,          // Just to keep track of when the game is being played
+        STATE_INGAME,           // In game menu (paused/back pressed)
+    };
 
     // Member variables used to keep track of the viewport
     static float mProjectionMatrix[] = new float[16];       // TODO Why was it 'final' in the original code?
@@ -48,11 +67,23 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     private LinkedList<TexturedAlignedRect> destroyList = new LinkedList<TexturedAlignedRect>();
     private GLBackground background;
 
-    public GameSurfaceRenderer(GameState gameState, GameSurfaceView gameSurfaceView) {
+    // For access to drawables
+    private Resources res;
+
+    private eGameStates mGameMenuState;
+    private TexturedAlignedRect rectSplash;
+
+    public GameSurfaceRenderer(GameState gameState, GameSurfaceView gameSurfaceView, Resources res) {
         mGameState = gameState;
         mSurfaceView = gameSurfaceView;
 
         mDetector = new GestureDetectorCompat(gameSurfaceView.getContext(), this);
+        this.res = res;
+    }
+
+    private void initialize() {
+        mGameMenuState = eGameStates.STATE_SPLASH;
+        initializeSplashScreen();
     }
 
     @Override
@@ -71,6 +102,8 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
         mGameState.initialize();
         background = new GLBackground();
+
+        initialize();
 
         bSurfaceCreated = true;
     }
@@ -121,6 +154,69 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
 
     @Override
     public void onDrawFrame(GL10 gl10) {
+        updateAnimators();
+        switch(mGameMenuState) {
+            case STATE_SPLASH:
+                drawSplashScreen();
+
+                break;
+
+            case STATE_MAIN:
+                break;
+
+            case STATE_PLAYING:
+                drawGameField();
+                break;
+        }
+        gcAnimators();
+
+
+        // After everything's done, swap buffers
+        mSurfaceView.requestRender();
+    }
+
+    private void initializeSplashScreen() {
+        Resources res = Resources.getSystem();
+        Bitmap splash = BitmapFactory.decodeResource(res, R.drawable.logo);
+        rectSplash = new TexturedAlignedRect();
+        rectSplash.setTexture(splash, splash.getWidth(), splash.getHeight());
+        rectSplash.setPosition(300, 300);
+        rectSplash.setScale(splash.getWidth()*2, splash.getHeight()*2);
+
+        TriggerAnimator splashTimer = new TriggerAnimator(2500, new Trigger() {
+            @Override
+            public void onFire() {
+                //mGameMenuState = eGameStates.STATE_MAIN;
+            }
+        });
+        OpacityAnimator splashOpacity = new OpacityAnimator(2500, rectSplash, 0.7f, 1.0f);
+        splashTimer.start();
+        splashOpacity.start();
+
+        addAnimator(splashTimer);
+        addAnimator(splashOpacity);
+
+
+    }
+
+    private void drawSplashScreen() {
+        GLES20.glClearColor(1.0f,0.0f,0.0f,0.0f);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+
+        // Draw things that require blending
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
+        rectSplash.draw();
+        GLES20.glDisable(GLES20.GL_BLEND);
+    }
+
+    public void drawMainMenu() {
+        GLES20.glClearColor(1.0f,0.0f,0.0f,0.0f);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+    }
+
+    private void drawGameField() {
         mGameState.calculateNextFrame();
         background.update();
         updateAnimators();
@@ -151,9 +247,6 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         // Get rid of objects we can delete
         gcAnimators();
         gcTempObjects();
-
-        // After everything's done, swap buffers
-        mSurfaceView.requestRender();
     }
 
     public void touchEvent(MotionEvent e) {

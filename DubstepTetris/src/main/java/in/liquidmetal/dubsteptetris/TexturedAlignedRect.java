@@ -1,7 +1,9 @@
 package in.liquidmetal.dubsteptetris;
 
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.opengl.GLES20;
+import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
 import java.nio.ByteBuffer;
@@ -78,6 +80,21 @@ public class TexturedAlignedRect extends BaseRect {
         mTextureDataHandle = Util.createImageTexture(buf, width, height, format);
         mTextureWidth = width;
         mTextureHeight = height;
+    }
+
+    public void setTexture(Bitmap bitmap, int iTextureWidth, int iTextureHeight) {
+        int[] handles = new int[1];
+        GLES20.glGenTextures(1, handles, 0);
+
+        iTextureWidth = (int)Math.pow(2, Math.ceil(Math.log(iTextureWidth)/Math.log(2)));
+        iTextureHeight = (int)Math.pow(2, Math.ceil(Math.log(iTextureHeight)/Math.log(2)));
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, handles[0]);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+
+        setTexture(handles[0], iTextureWidth, iTextureHeight);
     }
 
     public void setTexture(int handle, int width, int height) {

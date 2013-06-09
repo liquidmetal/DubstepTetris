@@ -27,6 +27,8 @@ public class GLPanel extends AlignedRect {
         for(GLButton btn:listButtons) {
             btn.TestClick(x, y);
         }
+
+        return true;
     }
 
     public void draw() {

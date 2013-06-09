@@ -1,6 +1,7 @@
 package in.liquidmetal.dubsteptetris;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.opengl.GLSurfaceView;
 import android.os.ConditionVariable;
 import android.view.MotionEvent;
@@ -11,10 +12,11 @@ import android.view.MotionEvent;
 public class GameSurfaceView extends GLSurfaceView {
     private GameSurfaceRenderer mRenderer;
     private GameState mGameState;
+    private Resources res;
     private final ConditionVariable syncObj = new ConditionVariable();
 
     // Constructor for the game view.
-    public GameSurfaceView(Context context, GameState gameState) {
+    public GameSurfaceView(Context context, GameState gameState, Resources res) {
         super(context);
 
         // Request for OpenGL ES 2.0
@@ -23,9 +25,10 @@ public class GameSurfaceView extends GLSurfaceView {
         mGameState = gameState;
         mGameState.initializeBoard();
 
-        mRenderer = new GameSurfaceRenderer(mGameState, this);
+        mRenderer = new GameSurfaceRenderer(mGameState, this, res);
         mGameState.setRenderer(mRenderer);
         setRenderer(mRenderer);
+        this.res = res;
     }
 
     @Override
