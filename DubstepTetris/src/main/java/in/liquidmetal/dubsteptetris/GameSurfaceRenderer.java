@@ -165,6 +165,7 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
                 break;
 
             case STATE_MAIN:
+                drawMainMenu();
                 break;
 
             case STATE_PLAYING:
@@ -216,7 +217,7 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     }
 
     public void drawMainMenu() {
-        GLES20.glClearColor(1.0f,0.0f,0.0f,0.0f);
+        GLES20.glClearColor(0.0f,0.0f,0.0f,0.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
     }
 
