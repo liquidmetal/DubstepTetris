@@ -86,15 +86,26 @@ public class TexturedAlignedRect extends BaseRect {
         int[] handles = new int[1];
         GLES20.glGenTextures(1, handles, 0);
 
-        iTextureWidth = (int)Math.pow(2, Math.ceil(Math.log(iTextureWidth)/Math.log(2)));
-        iTextureHeight = (int)Math.pow(2, Math.ceil(Math.log(iTextureHeight)/Math.log(2)));
+        int iTextureWidthNew = (int)Math.pow(2, Math.ceil(Math.log(iTextureWidth)/Math.log(2)));
+        int iTextureHeightNew = (int)Math.pow(2, Math.ceil(Math.log(iTextureHeight)/Math.log(2)));
+
+
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, handles[0]);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
 
-        setTexture(handles[0], iTextureWidth, iTextureHeight);
+        if(iTextureHeight != iTextureHeightNew || iTextureWidth != iTextureWidthNew) {
+            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, iTextureWidthNew, iTextureWidthNew, false);
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, scaled, 0);
+            scaled.recycle();
+
+            setTexture(handles[0], iTextureWidthNew, iTextureHeightNew);
+        } else {
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+
+            setTexture(handles[0], iTextureWidth, iTextureHeight);
+        }
     }
 
     public void setTexture(int handle, int width, int height) {
@@ -135,14 +146,12 @@ public class TexturedAlignedRect extends BaseRect {
 
     public void draw() {
         GLES20.glUseProgram(sProgramHandle);
-        GLES20.glUniform1i(sTextureUniformHandle, 0);
 
         GLES20.glEnableVertexAttribArray(sPositionHandle);
         GLES20.glVertexAttribPointer(sPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, VERTEX_STRIDE, sVertexBuffer);
 
         GLES20.glEnableVertexAttribArray(sTexCoordHandle);
         GLES20.glVertexAttribPointer(sTexCoordHandle, TEX_COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, TEX_VERTEX_STRIDE, mTexBuffer);
-
 
         float[] mvp = sTempMVP;
         Matrix.multiplyMM(mvp, 0, GameSurfaceRenderer.mProjectionMatrix, 0, mModelView, 0);
@@ -153,6 +162,7 @@ public class TexturedAlignedRect extends BaseRect {
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
+        GLES20.glUniform1i(sTextureUniformHandle, 0);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, VERTEX_COUNT);
 

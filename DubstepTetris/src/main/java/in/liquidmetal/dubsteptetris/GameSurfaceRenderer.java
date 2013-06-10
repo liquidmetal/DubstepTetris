@@ -3,6 +3,8 @@ package in.liquidmetal.dubsteptetris;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -89,19 +91,20 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         AlignedRect.createProgram();
+        TexturedAlignedRect.createProgram();
         GLText.createProgram();
 
-        textScore = new GLText(300, 300, "ABCD", 100, 0, 0);
+        /*textScore = new GLText(300, 300, "ABCD", 100, 0, 0);
         textScore.setPosition(700, 1000);
 
         textStatic = new GLText(300, 300, "static", 24, 0, 0);
         textStatic.setPosition(700, 700);
-        textStatic.setAlphaMultiplier(0.5f);
+        textStatic.setAlphaMultiplier(0.5f);*/
 
         GLES20.glDisable(GLES20.GL_CULL_FACE);
 
-        mGameState.initialize();
-        background = new GLBackground();
+        //mGameState.initialize();
+        //background = new GLBackground();
 
         initialize();
 
@@ -176,17 +179,18 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     }
 
     private void initializeSplashScreen() {
-        Resources res = Resources.getSystem();
         Bitmap splash = BitmapFactory.decodeResource(res, R.drawable.logo);
+
         rectSplash = new TexturedAlignedRect();
         rectSplash.setTexture(splash, splash.getWidth(), splash.getHeight());
-        rectSplash.setPosition(300, 300);
+        splash.recycle();
+        rectSplash.setPosition(350, 700);
         rectSplash.setScale(splash.getWidth()*2, splash.getHeight()*2);
 
         TriggerAnimator splashTimer = new TriggerAnimator(2500, new Trigger() {
             @Override
             public void onFire() {
-                //mGameMenuState = eGameStates.STATE_MAIN;
+                mGameMenuState = eGameStates.STATE_MAIN;
             }
         });
         OpacityAnimator splashOpacity = new OpacityAnimator(2500, rectSplash, 0.7f, 1.0f);
@@ -200,7 +204,7 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
     }
 
     private void drawSplashScreen() {
-        GLES20.glClearColor(1.0f,0.0f,0.0f,0.0f);
+        GLES20.glClearColor(0.0f,0.0f,0.0f,0.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Draw things that require blending
