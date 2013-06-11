@@ -216,9 +216,17 @@ public class GameSurfaceRenderer implements GLSurfaceView.Renderer, GestureDetec
         GLES20.glDisable(GLES20.GL_BLEND);
     }
 
+    public void initializeMainMenu() {
+        
+    }
+
     public void drawMainMenu() {
         GLES20.glClearColor(0.0f,0.0f,0.0f,0.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+
+        GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
+        GLES20.glScissor(50, 50, 100, 700);
+        rectSplash.draw();
     }
 
     private void drawGameField() {
